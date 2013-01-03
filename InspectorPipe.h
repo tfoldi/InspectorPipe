@@ -33,11 +33,14 @@
 
 #define TAB_LAZY_IMPLEMENT_FUNCTION( FNC, ... )						\
 	int My ## FNC ## ( __VA_ARGS__ )								\
-	{																
+	{																\
+		int ret;
 
 #define TAB_LAZY_IMPLEMENT_BODY( FNC, ... )						\
-	fprintf(pLogFile,"\r\n--- Called " #FNC "\r\n");		\
-	return p ## FNC( __VA_ARGS__ );							\
+	fprintf(pLogFile,"\r\n>>> Entering " #FNC "\r\n");		\
+	ret = p ## FNC( __VA_ARGS__ );							\
+	fprintf(pLogFile,"\r\n<<< Leaving " #FNC "\r\n");		\
+	return ret;												\
 	};
 
 
@@ -56,7 +59,7 @@ TAB_PROTOTYPE(TDE_ConnectionClose,void *); // idb
 TAB_PROTOTYPE(TDE_PropertiesGetCount,int a1, int a2, int a3);
 TAB_PROTOTYPE(TDE_PropertiesGetProperty,int a1, int a2, unsigned int a3, int a4, int a5);
 TAB_PROTOTYPE(TDE_PropertiesClose,int, void *); // idb
-TAB_PROTOTYPE(TDE_QueryExecute,void *a1, int Src, int a3);
+TAB_PROTOTYPE(TDE_QueryExecute,void *a1, wchar_t * Src, int a3);
 TAB_PROTOTYPE(TDE_StatementOpen,void *a1, int a2);
 TAB_PROTOTYPE(TDE_StatementPrepare,void *a1, int a2, int a3);
 TAB_PROTOTYPE(TDE_StatementExecute,void *a1, int a2, int a3);

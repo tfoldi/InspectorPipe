@@ -27,9 +27,6 @@ HMODULE  hTdeapi;
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ServerProcessGetErrorInfo,void *a1, int a2);
 TAB_LAZY_IMPLEMENT_BODY(TDE_ServerProcessGetErrorInfo, a1,  a2);
 
-TAB_LAZY_IMPLEMENT_FUNCTION(TDE_QueryExecute,void *a1, int Src, int a3);
-TAB_LAZY_IMPLEMENT_BODY(TDE_QueryExecute,a1, Src, a3);
-
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_StatementOpen,void *a1, int a2);
 TAB_LAZY_IMPLEMENT_BODY(TDE_StatementOpen,a1,a2);
 
@@ -45,9 +42,6 @@ TAB_LAZY_IMPLEMENT_BODY(TDE_GetErrorInfo,a1,  a2);
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ErrorInfoGetCount,int a1, int a2);
 TAB_LAZY_IMPLEMENT_BODY(TDE_ErrorInfoGetCount, a1,  a2);
 
-TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ServerProcessOpen,int a1);
-TAB_LAZY_IMPLEMENT_BODY(TDE_ServerProcessOpen, a1);
-
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ServerProcessStop,void *a1);
 TAB_LAZY_IMPLEMENT_BODY(TDE_ServerProcessStop,a1);
 
@@ -59,9 +53,6 @@ TAB_LAZY_IMPLEMENT_BODY(TDE_ServerProcessGetProcessId,a1,  a2);
 
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ServerProcessClose,void *a1); // idb
 TAB_LAZY_IMPLEMENT_BODY(TDE_ServerProcessClose,a1); // idb
-
-TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ConnectionOpen,int a1);
-TAB_LAZY_IMPLEMENT_BODY(TDE_ConnectionOpen, a1);
 
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ConnectionGetProperties,void *a1, int a2);
 TAB_LAZY_IMPLEMENT_BODY(TDE_ConnectionGetProperties,a1,  a2);
@@ -177,17 +168,8 @@ TAB_LAZY_IMPLEMENT_BODY(TDE_DownloadClose,a1, a2);
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ErrorInfoGetError,int a1, unsigned int a2, int a3);
 TAB_LAZY_IMPLEMENT_BODY(TDE_ErrorInfoGetError,a1,  a2,  a3);
 
-TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ServerProcessGetConnectionDescriptor,void *a1, char *Dest, size_t Count);
-TAB_LAZY_IMPLEMENT_BODY(TDE_ServerProcessGetConnectionDescriptor,a1, Dest,  Count);
-
-TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ConnectionConnect,void *a1, char *Src);
-TAB_LAZY_IMPLEMENT_BODY(TDE_ConnectionConnect,a1, Src);
-
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ConnectionDescriptorTcp,char *Src, unsigned __int16 a2, char *Dest, size_t Count);
 TAB_LAZY_IMPLEMENT_BODY(TDE_ConnectionDescriptorTcp,Src,  a2, Dest,  Count);
-
-TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ConnectionDescriptorNamedPipe,void *Src, char *a2, char *a3, size_t Count);
-TAB_LAZY_IMPLEMENT_BODY(TDE_ConnectionDescriptorNamedPipe, Src,  a2, a3,  Count);
 
 TAB_LAZY_IMPLEMENT_FUNCTION(TDE_ValueArrayClose,int a1, void *a2); // idb
 TAB_LAZY_IMPLEMENT_BODY(TDE_ValueArrayClose,a1,a2); // idb
@@ -355,9 +337,75 @@ INT APIENTRY DllMain(HMODULE hDLL, DWORD Reason, LPVOID Reserved)
 
 int MyTDE_ServerProcessStart(void *a1, int a2, char *Src, int a4, int a5)
 {
-	fprintf(pLogFile,"\r\n--- Called myTDE_ServerProcessStart with %s\r\n", Src);
-	return pTDE_ServerProcessStart(a1,a2,Src,a4,a5);
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called myTDE_ServerProcessStart %s, HANDLE=0x%x -> 0x%x, a4=%d, a5=%d\r\n",Src, a1, *(int *)a1,a4,a5);
+	ret = pTDE_ServerProcessStart(a1,a2,Src,a4,a5);
+	fprintf(pLogFile,"\r\n<<< Leaving  TDE_ServerProcessStart HANDLE=0x%x -> 0x%x\r\n", a1, *(int *)a1);	
+	return ret;
 }
+
+
+int MyTDE_ServerProcessOpen(int a1)
+{
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called TDE_ServerProcessOpen HANDLE=0x%x -> 0x%x\r\n", a1, *(int *)a1);
+	ret = pTDE_ServerProcessOpen(a1);
+	fprintf(pLogFile,"\r\n<<< Leaving  TDE_ServerProcessOpen HANDLE=0x%x -> 0x%x\r\n", a1, *(int *)a1);
+	return ret;
+}
+
+int MyTDE_ConnectionDescriptorNamedPipe(void *Src, char *a2, char *a3, size_t Count)
+{
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called TDE_ConnectionDescriptorNamedPipe\r\n");
+	ret = pTDE_ConnectionDescriptorNamedPipe(Src, a2, a3, Count);
+	fprintf(pLogFile,"\r\n<<< Leaving  TDE_ConnectionDescriptorNamedPipe\r\n");	
+	return ret;
+}
+
+int MyTDE_ServerProcessGetConnectionDescriptor(void *a1, char *Dest, size_t Count)
+{
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called TDE_ServerProcessGetConnectionDescriptor\r\n");
+	ret = pTDE_ServerProcessGetConnectionDescriptor(a1,Dest,Count);
+	fprintf(pLogFile,"\r\n<<< Leaving  TDE_ServerProcessGetConnectionDescriptor HANDLE=0x%x -> 0x%x, Dest %s\r\n", a1, *(char*) a1, Dest);	
+	return ret;
+}
+
+int MyTDE_ConnectionOpen(int a1)
+{
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called TDE_ConnectionOpen HANDLE=0x%x -> 0x%x\r\n", a1, (int *)a1);
+	ret = pTDE_ConnectionOpen(a1);
+	fprintf(pLogFile,"\r\n<<< Leaving  TDE_ConnectionOpen HANDLE=0x%x -> 0x%x\r\n", a1, *(int *)a1);
+	return ret;
+}
+
+
+
+int MyTDE_ConnectionConnect(void *a1, char *Src)
+{
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called TDE_ConnectionConnect to %s HANDLE=0x%x -> 0x%x\r\n", Src, a1, *(int *)a1);
+	ret = pTDE_ConnectionConnect(a1,Src);
+	fprintf(pLogFile,"\r\n<<< Leaving  TDE_ConnectionConnect HANDLE=0x%x -> 0x%x\r\n", a1, *(int *)a1);
+	return ret;
+}
+
+int MyTDE_QueryExecute(void *a1, wchar_t * Src, int a3)
+{
+	int ret;
+	fprintf(pLogFile,"\r\n>>> Called TDE_QueryExecute: HANDLE 0x%x->0x%x, Query=%ws a3=%d\r\n", a1, *(int *)a1, Src, a3  );
+	ret = pTDE_QueryExecute(a1,Src,a3);
+	fprintf(pLogFile,"\r\n<<< Leaving TDE_QueryExecute  \r\n");	
+	return ret;
+}
+
+	
+	
+	
+	
+	
 
 //Open file, write contents, close it
 int WINAPI MyWriteFile(HANDLE hFile, LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten,
