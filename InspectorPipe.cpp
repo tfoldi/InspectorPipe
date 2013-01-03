@@ -26,7 +26,7 @@ INT APIENTRY DllMain(HMODULE hDLL, DWORD Reason, LPVOID Reserved)
 	switch(Reason)
 	{
 	case DLL_PROCESS_ATTACH:	//Do standard detouring
-		fopen_s(&pLogFile, "C:\\PipeLog.txt", "a+");
+		fopen_s(&pLogFile, "PipeLog.txt", "a+");
 		DisableThreadLibraryCalls(hDLL);
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
